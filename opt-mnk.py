@@ -52,7 +52,6 @@ def kinarow(board, i, j, k):
 
     return  False, 0
 
-
 def iswinloss(board, me, k, style):
     m = len(board[0])
     n = len(board)
@@ -92,8 +91,6 @@ def minimax(board, me, turn, style, k):
         for j in range(len(board[i])):
             if board[i][j] == 0:
                 full = False
-                #next_board = deepcopy(board)
-                #next_board[i][j] = turn
                 next_board = tuple_replace(board,i,j,turn)
                 outcome, move = minimax(next_board, me, next_turn, style, k)
                 outcomes += [outcome]
@@ -117,7 +114,7 @@ def print_board(board):
         for j in range(m):
             cell = board[i][j]
             if cell == 0:
-                print('%2i ' % (i*3+j),end='')
+                print('   ',end='')
             elif cell == 1:
                 print(' X ',end='')
             else:
