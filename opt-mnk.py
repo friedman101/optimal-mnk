@@ -53,7 +53,7 @@ def kinarow(board, i, j, k):
     return  False, 0
 
 
-def iswinloss(board, me, k):
+def iswinloss(board, me, k, style):
     m = len(board[0])
     n = len(board)
 
@@ -61,9 +61,9 @@ def iswinloss(board, me, k):
         for j in range(m):
             hit, winner = kinarow(board, i, j, k)
             if hit and winner == me:
-                return 1
+                return 1*style
             if hit and winner != me:
-                return -1
+                return -1*style
 
     return 0
 
@@ -80,7 +80,7 @@ def minimax(board, me, turn, style, k):
     m = len(board[0])
     n = len(board)
 
-    winloss = style*iswinloss(board, me, k)
+    winloss = iswinloss(board, me, k, style)
     if winloss != 0:
         return winloss/turns(board), 0
     outcomes = []
@@ -138,7 +138,7 @@ parser.add_argument('style', help='Style, 1 for normal, -1 for misère')
 args = parser.parse_args()
 
 m = int(args.m)
-n = int(args.m)
+n = int(args.n)
 k = int(args.k)
 style = int(args.style)
 
@@ -150,10 +150,10 @@ turn = 1
 while(True):
     outcome, move = minimax(board,turn,turn,style,k)    
     if move == 0:
-        winloss = iswinloss(board, 1, k)
-        if winloss == 1:
+        winloss = iswinloss(board, 1, k, style)
+        if winloss > 0:
             print('Player 1 wins')
-        elif winloss == -1:
+        elif winloss < 0:
             print('Player 2 wins')
         else:
             print('Tie')
