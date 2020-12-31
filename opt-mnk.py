@@ -67,10 +67,10 @@ def iswinloss(board, me, k, style):
     return 0
 
 def tuple_replace(data,i,j,rep):
-    out = [[x for x in row] for row in data]
+    out = list(deepcopy(data))
+    out[i] = list(out[i])
     out[i][j] = rep
-    for i in range(len(out)):
-        out[i] = tuple(out[i])
+    out[i] = tuple(out[i])
     return tuple(out)
 
 
