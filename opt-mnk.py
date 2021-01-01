@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from copy import deepcopy
-from numpy import argmax, argmin
 from functools import lru_cache
 import argparse
 
@@ -67,8 +66,10 @@ def minimax(board, me, turn, style, k):
     winloss = iswinloss(board, me, k, style)
     if winloss != 0:
         return winloss/turns(board), 0
-    outcomes = []
-    moves = []
+    
+    best_outcome = 0
+    best_move = [0,0]
+    first = True
     
     full = True
     next_turn = 2 if turn == 1 else 1
@@ -78,17 +79,15 @@ def minimax(board, me, turn, style, k):
                 full = False
                 next_board = tuple_replace(board,i,j,turn)
                 outcome, move = minimax(next_board, me, next_turn, style, k)
-                outcomes += [outcome]
-                moves += [[i,j]]
+                if first or (turn==me and outcome > best_outcome) or (turn!=me and outcome < best_outcome):
+                    first = False
+                    best_outcome = outcome
+                    best_move = [i,j]
 
     if full:
         return 0,0
-    
-    if me == turn:
-        idx = argmax(outcomes)
-    else:
-        idx = argmin(outcomes)
-    return outcomes[idx], moves[idx]
+
+    return best_outcome, best_move
 
 
 def print_board(board):
