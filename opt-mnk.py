@@ -153,7 +153,7 @@ while(True):
         elif winloss < 0:
             print('Player 2 wins')
         else:
-            print('Tie')
+            print('Draw')
         exit()
     board = tuple_replace(board, move[0], move[1], turn)
     print_board(board)
