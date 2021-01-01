@@ -18,39 +18,24 @@ def kinarow(board, i, j, k):
     m = len(board[0])
     n = len(board)
 
-    # right
-    if j + k <= m:
-        for j_next in range(j+1,j+k):
-            if board[i][j] != board[i][j_next]:
-                break
-        else:
-            return True, board[i][j]
+    dirs = (  (0,1), (1,0), (1,1), (1,-1) )
+    for dir in dirs:
+        i_max = i+(k-1)*dir[0]
+        if i_max >= n or i_max < 0:
+            continue
+        j_max = j+(k-1)*dir[1]
+        if j_max >= m or j_max < 0:
+            continue
 
-    # down
-    if i + k <= n:
-        for i_next in range(i+1,i+k):
-            if board[i][j] != board[i_next][j]:
-                break
-        else:
-            return True, board[i][j]
-
-    # down-right
-    if i + k <= n and j + k <= m:
         for inc in range(1,k):
-            if board[i][j] != board[i+inc][j+inc]:
+            i_next = i+inc*dir[0]
+            j_next = j+inc*dir[1]
+            if board[i][j] != board[i_next][j_next]:
                 break
         else:
             return True, board[i][j]
 
-    # down-left
-    if i + k <= n and j - k >= -1:
-        for inc in range(1,k):
-            if board[i][j] != board[i+inc][j-inc]:
-                break
-        else:
-            return True, board[i][j]
-
-    return  False, 0
+    return False, 0
 
 def iswinloss(board, me, k, style):
     m = len(board[0])
