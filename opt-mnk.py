@@ -90,8 +90,12 @@ def minimax(board, me, style, k):
 
     return best_outcome, best_move
 
+def get_human_move(m):
+    move_number = int(input('Move: '))
+    move = divmod(move_number, m)
+    return move
 
-def print_board(board):
+def print_board(board, show_move_number=False):
     m = len(board[0])
     n = len(board)
 
@@ -99,7 +103,10 @@ def print_board(board):
         for j in range(m):
             cell = board[i][j]
             if cell == 0:
-                print('   ',end='')
+                if show_move_number:
+                    print('%2i ' % (i*m+j),end='')
+                else:
+                    print('   ',end='')
             elif cell == 1:
                 print(' X ',end='')
             else:
@@ -113,34 +120,48 @@ def print_board(board):
     print()
 
 parser = argparse.ArgumentParser(description='Play optimal m,n,k-game. Arguments 3 3 3 1 plays tic-tac-toe')
-parser.add_argument('m', help='Board columns')
-parser.add_argument('n', help='Board rows')
-parser.add_argument('k', help='K in a row to win')
-parser.add_argument('style', help='Style, 1 for normal, -1 for misère')
+parser.add_argument('m', help='Board columns', type=int)
+parser.add_argument('n', help='Board rows', type=int)
+parser.add_argument('k', help='K in a row to win', type=int)
+parser.add_argument('style', help='Style, 1 for normal, -1 for misère', type=int)
+parser.add_argument('--play-first', help='flag to let human play first', action="store_true")
+parser.add_argument('--play-second', help='flag to let human play second', action="store_true")
 args = parser.parse_args()
 
-m = int(args.m)
-n = int(args.n)
-k = int(args.k)
-style = int(args.style)
+m = args.m
+n = args.n
+k = args.k
+style = args.style
 
 board = tuple([tuple([0 for i in range(m)]) for j in range(n)])
 
-print_board(board)
-
 turn = 1
-while(True):
-    outcome, move = minimax(board,turn,style,k)    
-    if move == 0:
-        winloss = iswinloss(board, 1, k, style)
-        if winloss > 0:
-            print('Player 1 wins')
-        elif winloss < 0:
-            print('Player 2 wins')
-        else:
-            print('Draw')
-        exit()
+turn_cnt = [0,0]
+comp_vs_comp = not args.play_first and not args.play_second
+full = False
+winloss = 0
+
+print_board(board, not comp_vs_comp)
+while(not full and winloss == 0):
+    odd_turn = sum(turn_cnt)%2
+    if not odd_turn and args.play_first:
+        move = get_human_move(m)
+    elif odd_turn and args.play_second:
+        move = get_human_move(m)
+    else:
+        outcome, move = minimax(board,turn,style,k)    
     board = tuple_replace(board, move[0], move[1], turn)
-    print_board(board)
+    turn_cnt[turn-1]+=1
+    print_board(board, not comp_vs_comp)
+
+    full = turns(board) == m*n
+    winloss = iswinloss(board, 1, k, style)
+    if winloss > 0:
+        print('Player 1 wins in %i turns' % turn_cnt[0])
+    elif winloss < 0:
+        print('Player 2 wins in %i turns' % turn_cnt[1])
+    elif full:
+        print('Draw')
+
     turn = 2 if turn == 1 else 1
 
