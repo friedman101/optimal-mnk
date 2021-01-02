@@ -59,7 +59,7 @@ def tuple_replace(data,i,j,rep):
 
 
 @lru_cache(maxsize=None)
-def minimax(board, me, turn, style, k):
+def minimax(board, me, style, k):
     m = len(board[0])
     n = len(board)
 
@@ -72,14 +72,15 @@ def minimax(board, me, turn, style, k):
     first = True
     
     full = True
-    next_turn = 2 if turn == 1 else 1
+    next_me = 2 if me == 1 else 1
     for i in range(len(board)):
         for j in range(len(board[i])):
             if board[i][j] == 0:
                 full = False
-                next_board = tuple_replace(board,i,j,turn)
-                outcome, move = minimax(next_board, me, next_turn, style, k)
-                if first or (turn==me and outcome > best_outcome) or (turn!=me and outcome < best_outcome):
+                next_board = tuple_replace(board,i,j,me)
+                outcome, move = minimax(next_board, next_me, style, k)
+                outcome *= -1
+                if first or outcome > best_outcome:
                     first = False
                     best_outcome = outcome
                     best_move = [i,j]
@@ -129,7 +130,7 @@ print_board(board)
 
 turn = 1
 while(True):
-    outcome, move = minimax(board,turn,turn,style,k)    
+    outcome, move = minimax(board,turn,style,k)    
     if move == 0:
         winloss = iswinloss(board, 1, k, style)
         if winloss > 0:
